@@ -1,0 +1,11 @@
+[Unit]
+Description={{ service }}
+
+[Service]
+ExecStart=/usr/local/bin/{{ service }}
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

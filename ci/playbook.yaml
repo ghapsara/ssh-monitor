@@ -1,0 +1,67 @@
+- hosts: localhost 
+  gather_facts: no
+  vars:
+    apps: [client, server]
+  tasks:
+  - name: build binaries
+    environment:
+      GOOS: linux 
+      GOARCH: amd64 
+      CGO_ENABLED: 0 
+    command: go build -o ../deploy/{{ item }} ../{{ item }}/main.go
+    loop: "{{ apps }}"
+ 
+  - name: render service
+    vars:
+      service: "{{ item }}"
+    template:
+      src: ../deploy/service.j2
+      dest: ../deploy/{{ service }}.service
+    loop: "{{ apps }}"
+
+- hosts: server
+  become: yes
+  become_user: root
+  tasks:
+  - name: copy bin
+    copy:
+      src: ../deploy/client
+      dest: /usr/local/bin/server
+
+  - name: copy service
+    copy:
+      src: ../deploy/server.service
+      dest: /etc/systemd/system/
+
+  - name: grant exec
+    command: chmod +x /usr/local/bin/server
+
+  - name: start service
+    systemd:
+      name: server.service
+      state: started
+      enabled: yes
+
+- hosts: client
+  become: yes
+  become_user: root
+  tasks:
+  - name: copy bin
+    copy:
+      src: ../deploy/client
+      dest: /usr/local/bin/
+
+  - name: copy service
+    copy:
+      src: ../deploy/client.service
+      dest: /etc/systemd/system/
+
+  - name: grant exec
+    command: chmod +x /usr/local/bin/client
+
+  - name: start service
+    systemd:
+      name: client.service
+      state: started
+      enabled: yes
+

@@ -1,0 +1,21 @@
+cluster:
+  name: cluster
+  privateKey: cluster-key
+machines:
+- count: 1
+  spec:
+    backend: docker
+    image: quay.io/footloose/centos7:0.6.3
+    name: server%d
+    portMappings:
+    - containerPort: 22
+      hostPort: 22
+    - containerPort: 9999
+      hostPort: 9999
+- count: 2
+  spec:
+    backend: docker
+    image: quay.io/footloose/centos7:0.6.3
+    name: client%d
+    portMappings:
+    - containerPort: 22

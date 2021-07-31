@@ -1,0 +1,11 @@
+[Unit]
+Description=client
+
+[Service]
+ExecStart=/usr/local/bin/client
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

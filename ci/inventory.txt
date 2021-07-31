@@ -1,0 +1,7 @@
+[server]
+cluster-server0 ansible_connection=docker
+
+[client]
+cluster-client0 ansible_connection=docker
+cluster-client1 ansible_connection=docker
+
