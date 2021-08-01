@@ -1,8 +1,15 @@
 - hosts: localhost 
-  gather_facts: no
+  gather_facts: yes
   vars:
     apps: [client, server]
   tasks:
+  - name: init footloose machine
+    shell: |
+      cd ../ &&\
+      footloose stop &&\
+      yes | docker container prune &&\
+      footloose create
+    
   - name: build binaries
     environment:
       GOOS: linux 
@@ -25,16 +32,21 @@
   tasks:
   - name: copy bin
     copy:
-      src: ../deploy/client
+      src: ../deploy/server
       dest: /usr/local/bin/server
+
+  - name: grant exec
+    command: chmod +x /usr/local/bin/server
 
   - name: copy service
     copy:
       src: ../deploy/server.service
       dest: /etc/systemd/system/
 
-  - name: grant exec
-    command: chmod +x /usr/local/bin/server
+  - name: copy .env
+    copy: 
+      src: ../.env
+      dest: /root
 
   - name: start service
     systemd:
@@ -51,17 +63,21 @@
       src: ../deploy/client
       dest: /usr/local/bin/
 
+  - name: grant exec
+    command: chmod +x /usr/local/bin/client
+
   - name: copy service
     copy:
       src: ../deploy/client.service
       dest: /etc/systemd/system/
-
-  - name: grant exec
-    command: chmod +x /usr/local/bin/client
+  
+  - name: copy .env
+    copy: 
+      src: ../.env
+      dest: /root
 
   - name: start service
     systemd:
       name: client.service
       state: started
       enabled: yes
-

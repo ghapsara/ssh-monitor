@@ -5,6 +5,11 @@
 - footloose
 - ansible
 
+### Deploy footloose machine
+```bash
+footloose create
+```
+
 ## How to run
 build and deploy
 ```bash

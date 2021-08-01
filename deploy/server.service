@@ -2,6 +2,7 @@
 Description=server
 
 [Service]
+RootDirectory=/root
 ExecStart=/usr/local/bin/server
 
 Restart=on-failure

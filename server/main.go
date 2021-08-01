@@ -10,6 +10,8 @@ import (
 	ssh "sshps"
 
 	"sshps/storage"
+
+	"github.com/joho/godotenv"
 )
 
 type Server struct {
@@ -17,13 +19,19 @@ type Server struct {
 }
 
 func main() {
-	storage := storage.NewLocalStorage()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	server := New(&storage)
+	port := os.Getenv("SERVER_PORT")
 
 	httpserver := http.Server{
-		Addr: os.Getenv("SERVER_ADDR"),
+		Addr: ":" + port,
 	}
+
+	storage := storage.NewLocalStorage()
+	server := New(&storage)
 
 	http.HandleFunc("/save", server.save)
 	http.HandleFunc("/view", server.view)

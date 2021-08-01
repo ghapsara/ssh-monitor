@@ -2,6 +2,7 @@
 Description=client
 
 [Service]
+RootDirectory=/root
 ExecStart=/usr/local/bin/client
 
 Restart=on-failure

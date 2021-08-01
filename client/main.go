@@ -4,18 +4,23 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	ssh "sshps"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	s := ssh.New()
-	serverAddr := os.Getenv("SERVER_ADDR")
-	if len(serverAddr) == 0 {
-		serverAddr = "http://host.docker.internal:9999"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
+	serverAddr := os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT")
+
+	s := ssh.New()
 
 	for {
 		session := s.GetTotalSession()
@@ -24,10 +29,6 @@ func main() {
 		if err != nil {
 			fmt.Println("client %w", err)
 		}
-
-		fmt.Println(string(s))
-
-		fmt.Println(serverAddr)
 
 		resp, err := http.Post(serverAddr+"/save", "application/json", bytes.NewBuffer(s))
 		if err != nil {
