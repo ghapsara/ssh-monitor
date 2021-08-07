@@ -1,8 +1,9 @@
 [Unit]
 Description=server
+Documentation=https://github.com/ghapsara/ssh-monitor
 
 [Service]
-RootDirectory=/root
+WorkingDirectory=/root
 ExecStart=/usr/local/bin/server
 
 Restart=on-failure

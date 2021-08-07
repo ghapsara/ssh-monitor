@@ -27,15 +27,24 @@ func NewLocalStorage() LocalStorage {
 	}
 }
 
-func (l *LocalStorage) Save(s ssh.Session) error {
+func (l *LocalStorage) Read() ([]ssh.Session, error) {
+	var sessions []ssh.Session
+
 	data, err := ioutil.ReadFile(l.Filename)
+	if err != nil {
+		return sessions, err
+	}
+
+	err = json.Unmarshal(data, &sessions)
+
+	return sessions, nil
+}
+
+func (l *LocalStorage) Save(s ssh.Session) error {
+	sessions, err := l.Read()
 	if err != nil {
 		return err
 	}
-
-	var sessions []ssh.Session
-
-	err = json.Unmarshal(data, &sessions)
 
 	exist := false
 	for _, v := range sessions {
@@ -49,15 +58,11 @@ func (l *LocalStorage) Save(s ssh.Session) error {
 		sessions = append(sessions, s)
 	}
 
-	data, err = json.Marshal(sessions)
+	data, err := json.Marshal(sessions)
 	if err != nil {
 		return err
 	}
 
 	err = os.WriteFile(l.Filename, data, 0644)
 	return err
-}
-
-func (l *LocalStorage) Read() ([]ssh.Session, error) {
-	return []ssh.Session{}, nil
 }

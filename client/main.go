@@ -27,12 +27,12 @@ func main() {
 
 		s, err := json.Marshal(session)
 		if err != nil {
-			fmt.Println("client %w", err)
+			log.Fatal(err)
 		}
 
 		resp, err := http.Post(serverAddr+"/save", "application/json", bytes.NewBuffer(s))
 		if err != nil {
-			fmt.Println("client", err)
+			log.Fatal(err)
 		}
 		fmt.Println(resp)
 
