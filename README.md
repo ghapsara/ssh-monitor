@@ -1,14 +1,9 @@
 # SSH Monitor
 
 ## Prequesite
-- docker
-- footloose
-- ansible
-
-### Deploy footloose machine
-```bash
-footloose create
-```
+- [docker](https://www.docker.com/)
+- [footloose](https://github.com/weaveworks/footloose)
+- [ansible](https://www.ansible.com/)
 
 ## How to run
 build and deploy
