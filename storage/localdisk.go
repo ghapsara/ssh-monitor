@@ -47,9 +47,9 @@ func (l *LocalStorage) Save(s ssh.Session) error {
 	}
 
 	exist := false
-	for _, v := range sessions {
+	for i, v := range sessions {
 		if v.Hostname == s.Hostname {
-			v.Total = s.Total
+			sessions[i].Total = s.Total
 			exist = true
 		}
 	}

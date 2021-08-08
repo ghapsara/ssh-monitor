@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -23,18 +22,20 @@ func main() {
 	s := ssh.New()
 
 	for {
-		session := s.GetTotalSession()
+		session, err := s.GetTotalSession()
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		s, err := json.Marshal(session)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		resp, err := http.Post(serverAddr+"/save", "application/json", bytes.NewBuffer(s))
+		_, err = http.Post(serverAddr+"/save", "application/json", bytes.NewBuffer(s))
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(resp)
 
 		time.Sleep(1 * time.Second)
 	}

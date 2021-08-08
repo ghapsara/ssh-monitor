@@ -49,21 +49,13 @@ func (s *Server) save(rw http.ResponseWriter, r *http.Request) {
 	// call save to database
 	var session ssh.Session
 	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
+	must(rw, err)
 
 	err = json.Unmarshal(body, &session)
-	if err != nil {
-		fmt.Println(err)
-	}
+	must(rw, err)
 
 	err = s.Storage.Save(session)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println("session saved", err)
+	must(rw, err)
 }
 
 func (s *Server) view(rw http.ResponseWriter, r *http.Request) {
@@ -71,15 +63,19 @@ func (s *Server) view(rw http.ResponseWriter, r *http.Request) {
 	// read aggregated ssh session data
 	// output
 	session, err := s.Storage.Read()
-
-	if err != nil {
-		fmt.Fprintf(rw, "err")
-	}
+	must(rw, err)
 
 	resp := ""
 	for _, s := range session {
 		resp += fmt.Sprintf("%s had %d attempts\n", s.Hostname, s.Total)
 	}
-
+	must(rw, err)
 	fmt.Fprintf(rw, resp)
+}
+
+func must(rw http.ResponseWriter, err error) {
+	if err != nil {
+		fmt.Fprintf(rw, err.Error())
+		return
+	}
 }

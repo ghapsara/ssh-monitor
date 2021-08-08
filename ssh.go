@@ -1,7 +1,6 @@
 package ssh
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
@@ -24,24 +23,23 @@ func New() Session {
 	}
 }
 
-// GetTotalSession returns last 2 minutes ssh logs
-func (s *Session) GetTotalSession() Session {
+func (s *Session) GetTotalSession() (Session, error) {
 	command := "journalctl -t sshd"
-	// command := "cat sshlog"
 	c, b := exec.Command("/bin/bash", "-c", command), new(strings.Builder)
 	c.Stdout = b
-	// err := c.Run()
-	c.Run()
-	// if err != nil {
-	// 	return nil
-	// }
+	err := c.Run()
 
-	sessionID := sshLogRegex.FindAllString(b.String(), -1)
-	fmt.Println(b.String())
+	sessions := sshLogRegex.FindAllString(b.String(), -1)
+	s.Total = calculateSessions(sessions)
 
-	s.Total = len(sessionID)
-
-	return *s
+	return *s, err
 }
 
-// func
+func calculateSessions(s []string) int {
+	sessionDict := make(map[string]bool, len(s))
+	for _, v := range s {
+		sessionDict[v] = true
+	}
+
+	return len(sessionDict)
+}
